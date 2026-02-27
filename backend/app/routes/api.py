@@ -40,3 +40,22 @@ async def get_metrics():
         "never": never,
         "never_rate": round(never/total * 100, 2)
     }
+
+from app.services.rules_service import RulesService
+from app.models import SuppressionRule
+
+rules_service = RulesService()
+
+@router.get("/rules")
+async def list_rules():
+    return rules_service.get_active_rules()
+
+@router.post("/rules")
+async def create_rule(rule: SuppressionRule):
+    rules_service.add_rule(rule)
+    return {"message": "Rule created successfully"}
+
+@router.delete("/rules/{rule_id}")
+async def delete_rule(rule_id: int):
+    rules_service.delete_rule(rule_id)
+    return {"message": f"Rule {rule_id} deleted"}

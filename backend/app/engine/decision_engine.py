@@ -3,6 +3,7 @@ from datetime import datetime
 from app.models import NotificationEvent, DecisionResult
 from app.engine.classifier import ClassifierService
 from app.engine.semantic_dedup import SemanticDeduplicator
+from app.services.rules_service import RulesService
 from app.services.audit import AuditService
 from app.services.history import HistoryService
 
@@ -12,6 +13,7 @@ class DecisionEngine:
         self.deduplicator = SemanticDeduplicator()
         self.audit = AuditService()
         self.history = HistoryService()
+        self.rules = RulesService()
 
     async def process_event(self, event: NotificationEvent) -> DecisionResult:
         # 1. Validation & Pre-logging
@@ -28,6 +30,12 @@ class DecisionEngine:
             )
             self.audit.log_decision(result)
             return result
+
+        # 2a. Human-Configurable Rules Check
+        rule_result = self.rules.evaluate_rules(event)
+        if rule_result:
+            self.audit.log_decision(rule_result)
+            return rule_result
 
         # 3. Exact & Semantic Deduplication
         # (In a real system, we'd use the dedupe_key if provided)

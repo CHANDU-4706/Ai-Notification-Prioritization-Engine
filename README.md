@@ -6,6 +6,7 @@ An AI-native prioritization system that intelligently categories notifications i
 - **Semantic Deduplication**: Uses vector embeddings (MiniLM) and FAISS to catch redundant alerts.
 - **Smart Fatigue Management**: Employs an exponential decay model to track user alert volume.
 - **Explainable AI (XAI)**: Generates clear reasoning for every decision made by the engine.
+- **Human-Configurable Rules**: Dynamic suppression engine allows non-devs to manage alert noise via simple CRUD operations.
 - **High-Performance Backend**: Built with Python/FastAPI for low-latency dispatching.
 - **Premium Dashboard**: Real-time metrics and audit logs via a React/Vite frontend.
 
@@ -67,7 +68,7 @@ cd frontend
 npm install
 npm run dev
 ```
-*Note: The frontend is configured to communicate with the backend at `http://localhost:8001`.*
+*Note: The frontend is configured to communicate with the backend at `http://localhost:8001`. Managed rules can be configured via `/api/v1/rules`.*
 
 ## Constraint Fulfillment
 
@@ -76,7 +77,7 @@ npm run dev
 | **High Event Volume** | Asynchronous processing via FastAPI/Uvicorn and efficient LiteDB indexing. |
 | **Low-Latency Decisions** | 2-second strict timeout on AI calls with local rule-based fallback logic. |
 | **Time-Sensitivity** | Stage 3 Expiry Check filters out stale notifications before expensive processing. |
-| **Optional/Promotional Noise** | LLM classification identifies "Promotional" intent; Fatigue Model suppresses it during busy periods. |
+| **Optional/Promotional Noise** | LLM classification identifies "Promotional" intent; **Human Rules** allow explicit suppression of specific sources/types. |
 | **Multi-Service Events** | User-centric History Service tracks fatigue across all service sources. |
 | **Missing Duplicate Keys** | FAISS-powered Semantic Deduplication catches redundant alerts even without IDs. |
 | **Explainable & Auditable** | Every decision includes an AI-generated `reason` and is stored in the Audit Log. |
